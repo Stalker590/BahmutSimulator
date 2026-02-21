@@ -15,7 +15,7 @@ import 'Classes/Config.dart';
 void main() {
   Country greenSide = Country(
     name: "Ukraine",
-    generals: [General(name: "Alexander Bahmutov", age: 50, experience: 5)],
+    generals: [],
     color: AnsiColor.green,
     units: [],
     money: 1000,
@@ -24,7 +24,7 @@ void main() {
   );
   Country redSide = Country(
     name: "Russia",
-    generals: [General(name: "Vladimir Medvedev", age: 40, experience: 10)],
+    generals: [],
     color: AnsiColor.red,
     units: [],
     money: 800,
@@ -90,11 +90,12 @@ void main() {
     description:
         "Сражение между украинскими войсками и ЧВК Вагнер за контроль над Бахмутом.",
     worldMap: worldMap,
-    TimeForTurn: 5, // Поставил 5 для теста, чтоб быстрее бегало
+    TimeForTurn: 5,
     countries: [greenSide, redSide, neutral],
     objects: objects,
     currentTurn: 0,
     GameRunning: true,
+    generals: []
   );
 
   List<GameConfig> games = [game1];
@@ -120,14 +121,14 @@ void main() {
   }
 
   var choiceOfSide = int.tryParse(stdin.readLineSync() ?? "1") ?? 1;
-  currentGame.countries[choiceOfSide - 1].generals.add(general);
+  currentGame.generals.add(general);
 
   print("\n>>> ИГРА НАЧИНАЕТСЯ ЧЕРЕЗ 3 СЕКУНДЫ <<<");
   sleep(Duration(seconds: 3));
 
   // ЦИКЛ ИГРЫ
-  while (currentGame.GameRunning) {
-    // Очистка экрана и возврат курсора в (0,0)
+  while (currentGame.GameRunning &&
+    currentGame.generals.contains(general)) {
     stdout.write('\x1B[2J\x1B[H');
 
     currentGame.currentTurn++;
@@ -141,10 +142,8 @@ void main() {
     );
     print("=" * 60);
 
-    // 1. Рисуем карту
     printMap(map: currentGame.worldMap);
 
-    // 2. Экономика
     print("\n--- СВОДКА ПО СТРАНАМ ---");
     for (var country in currentGame.countries) {
       if (country.name == "Emptiness territory") continue;
@@ -153,11 +152,10 @@ void main() {
       country.money += income;
 
       print(
-        "${country.color}${country.name}${AnsiColor.reset}: \$${country.money} (+$income)",
+        "${country.color}${country.name}${AnsiColor.reset}: \$${country.money} (+$income) | Юнитов: ${country.units.length}",
       );
     }
 
-    // 3. Проверка на конец игры
     if (greenSide.units.isEmpty || redSide.units.isEmpty) {
       currentGame.GameRunning = false;
       print("\n!!! БИТВА ЗАВЕРШЕНА !!!");
@@ -166,5 +164,5 @@ void main() {
 
     print("\n[ СЛЕДУЮЩИЙ ХОД ЧЕРЕЗ ${currentGame.TimeForTurn} СЕКУНД ]");
     sleep(Duration(seconds: currentGame.TimeForTurn));
-  }
+  } 
 }

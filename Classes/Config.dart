@@ -1,5 +1,6 @@
 import 'Country.dart';
 import 'GameObject.dart';
+import 'Generals.dart';
 
 
 class GameConfig {
@@ -8,9 +9,12 @@ class GameConfig {
   List<List<GameObject>> worldMap;
   List<Country> countries;
   List<GameObject> objects;
+  List<General> generals;
   int TimeForTurn;
   int currentTurn;
   bool GameRunning;
+
+
 
   GameConfig({
     required this.nameOfBattle,
@@ -19,6 +23,7 @@ class GameConfig {
     required this.countries,
     required this.objects,
     required this.TimeForTurn,
+    required this.generals,
     this.currentTurn = 0,
     this.GameRunning = true,
   });
