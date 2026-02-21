@@ -21,6 +21,7 @@ void main() {
     money: 1000,
     population: 5000,
     AbleToCreating: UkrainianSet,
+    PoliticalPower: 200
   );
   Country redSide = Country(
     name: "Russia",
@@ -30,6 +31,7 @@ void main() {
     money: 800,
     population: 3000,
     AbleToCreating: RussianSet,
+    PoliticalPower: 400
   );
 
   Country neutral = Country(
@@ -40,6 +42,7 @@ void main() {
     money: 0,
     population: 0,
     AbleToCreating: [],
+    PoliticalPower: 0
   );
 
   List<List<GameObject>> worldMap = generateMap(
@@ -90,7 +93,6 @@ void main() {
     description:
         "Сражение между украинскими войсками и ЧВК Вагнер за контроль над Бахмутом.",
     worldMap: worldMap,
-    TimeForTurn: 5,
     countries: [greenSide, redSide, neutral],
     objects: objects,
     currentTurn: 0,
@@ -162,7 +164,5 @@ void main() {
       break;
     }
 
-    print("\n[ СЛЕДУЮЩИЙ ХОД ЧЕРЕЗ ${currentGame.TimeForTurn} СЕКУНД ]");
-    sleep(Duration(seconds: currentGame.TimeForTurn));
   } 
 }

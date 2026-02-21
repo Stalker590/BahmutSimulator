@@ -8,6 +8,7 @@ class Country {
   int money;
   int population;
   List<dynamic> AbleToCreating;
+  int PoliticalPower;
 
   Country({
     required this.name,
@@ -16,7 +17,8 @@ class Country {
     required this.units,
     required this.money,
     required this.population,
-    required this.AbleToCreating
+    required this.AbleToCreating,
+    required this.PoliticalPower
   });
 
   String About() {

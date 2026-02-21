@@ -10,7 +10,6 @@ class GameConfig {
   List<Country> countries;
   List<GameObject> objects;
   List<General> generals;
-  int TimeForTurn;
   int currentTurn;
   bool GameRunning;
 
@@ -22,7 +21,6 @@ class GameConfig {
     required this.worldMap,
     required this.countries,
     required this.objects,
-    required this.TimeForTurn,
     required this.generals,
     this.currentTurn = 0,
     this.GameRunning = true,

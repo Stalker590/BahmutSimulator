@@ -26,6 +26,9 @@ Country generateCountry() {
       generals.add(generateGeneral());
     }
 
+    stdout.write("How much political power you want?");
+    var politicalPower = int.tryParse(stdin.readLineSync() ?? "100") ?? 1;
+
     return Country(
       name: name,
       generals: generals,
@@ -34,6 +37,7 @@ Country generateCountry() {
       money: money,
       population: population,
       AbleToCreating: [],
+      PoliticalPower: politicalPower
     );
   } catch (e) {
     print("❌ Error creating country: $e");
