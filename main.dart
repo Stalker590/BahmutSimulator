@@ -4,15 +4,15 @@ import 'Classes/Enums/Types.dart';
 import 'Classes/Country.dart';
 import 'Classes/GameObject.dart';
 import 'Classes/Generals.dart';
+import 'Classes/GenerateGeneral.dart';
 import 'Classes/GenerateMap.dart';
 import 'Classes/printMap.dart';
 import 'Classes/GenerateCountry.dart';
 import 'Classes/UkrainianPack.dart';
 import 'Classes/RussianPack.dart';
+import 'Classes/Config.dart';
 
 void main() {
-  List<Country> countries = [];
-
   Country greenSide = Country(
     name: "Ukraine",
     generals: [General(name: "Alexander Bahmutov", age: 50, experience: 5)],
@@ -43,12 +43,12 @@ void main() {
   );
 
   List<List<GameObject>> worldMap = generateMap(
-    sizeX: 15,
-    sizeY: 10,
+    sizeX: 60,
+    sizeY: 30,
     neutral: neutral,
   );
 
-  // Размещаем украинцев (РАЗНЫЕ координаты)
+  // Размещаем юнитов через каскад
   List<GameObject> objects = [
     (UkrainianSet[0] as GameObject)
       ..side = greenSide
@@ -76,32 +76,95 @@ void main() {
       ..y = 2,
   ];
 
-  // Добавляем в армии
   greenSide.units.addAll(objects.where((o) => o.side == greenSide));
   redSide.units.addAll(objects.where((o) => o.side == redSide));
 
-  // ОДИН раз размещаем правильно
   for (var obj in objects) {
     if (obj.y < worldMap.length && obj.x < worldMap[0].length) {
       worldMap[obj.y][obj.x] = obj;
     }
   }
 
+  GameConfig game1 = GameConfig(
+    nameOfBattle: "Битва под бахмутом",
+    description:
+        "Сражение между украинскими войсками и ЧВК Вагнер за контроль над Бахмутом.",
+    worldMap: worldMap,
+    TimeForTurn: 5, // Поставил 5 для теста, чтоб быстрее бегало
+    countries: [greenSide, redSide, neutral],
+    objects: objects,
+    currentTurn: 0,
+    GameRunning: true,
+  );
+
+  List<GameConfig> games = [game1];
+
   print("╔════════════════════════════════════╗");
-  print("║    BAHMUT SIMULATOR - MAP VIEW     ║");
+  print("║    BAHMUT SIMULATOR - START UP     ║");
   print("╚════════════════════════════════════╝\n");
-  printMap(map: worldMap);
 
-  // ПОСЛЕ карты - инфо о юнитах
-  print("\n${AnsiColor.green}${greenSide.name}:${AnsiColor.reset}");
-  for (var unit in greenSide.units) {
-    print("  ${unit.model} ${unit.name} at (${unit.x}, ${unit.y})");
+  General general = generateGeneral();
+  print(general.About());
+
+  print("К какой битве хотите перейти? (Введите номер)");
+  for (int i = 0; i < games.length; i++) {
+    print("${i + 1}. ${games[i].nameOfBattle}");
   }
 
-  print("\n${AnsiColor.red}${redSide.name}:${AnsiColor.reset}");
-  for (var unit in redSide.units) {
-    print("  ${unit.model} ${unit.name} at (${unit.x}, ${unit.y})");
+  var choiceOfBattle = int.tryParse(stdin.readLineSync() ?? "1") ?? 1;
+  var currentGame = games[choiceOfBattle - 1];
+
+  print("К какой стороне хотите присоединиться? (Введите номер)");
+  for (int i = 0; i < currentGame.countries.length; i++) {
+    print("${i + 1}. ${currentGame.countries[i].name}");
   }
 
+  var choiceOfSide = int.tryParse(stdin.readLineSync() ?? "1") ?? 1;
+  currentGame.countries[choiceOfSide - 1].generals.add(general);
 
+  print("\n>>> ИГРА НАЧИНАЕТСЯ ЧЕРЕЗ 3 СЕКУНДЫ <<<");
+  sleep(Duration(seconds: 3));
+
+  // ЦИКЛ ИГРЫ
+  while (currentGame.GameRunning) {
+    // Очистка экрана и возврат курсора в (0,0)
+    stdout.write('\x1B[2J\x1B[H');
+
+    currentGame.currentTurn++;
+
+    print("=" * 60);
+    print(
+      "БИТВА: ${currentGame.nameOfBattle.toUpperCase()} | ХОД: ${currentGame.currentTurn}",
+    );
+    print(
+      "ГЕНЕРАЛ: ${general.name} | СТОРОНА: ${currentGame.countries[choiceOfSide - 1].name}",
+    );
+    print("=" * 60);
+
+    // 1. Рисуем карту
+    printMap(map: currentGame.worldMap);
+
+    // 2. Экономика
+    print("\n--- СВОДКА ПО СТРАНАМ ---");
+    for (var country in currentGame.countries) {
+      if (country.name == "Emptiness territory") continue;
+
+      int income = (country.population / 100).floor();
+      country.money += income;
+
+      print(
+        "${country.color}${country.name}${AnsiColor.reset}: \$${country.money} (+$income)",
+      );
+    }
+
+    // 3. Проверка на конец игры
+    if (greenSide.units.isEmpty || redSide.units.isEmpty) {
+      currentGame.GameRunning = false;
+      print("\n!!! БИТВА ЗАВЕРШЕНА !!!");
+      break;
+    }
+
+    print("\n[ СЛЕДУЮЩИЙ ХОД ЧЕРЕЗ ${currentGame.TimeForTurn} СЕКУНД ]");
+    sleep(Duration(seconds: currentGame.TimeForTurn));
+  }
 }

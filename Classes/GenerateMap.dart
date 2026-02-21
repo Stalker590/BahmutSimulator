@@ -14,7 +14,7 @@ List<List<GameObject>> generateMap({
       (x) => GameObject(
         // Базовая инфа
         name: "Пустошь",
-        description: "Обычная территория, не занятая постройками",
+        description: "Обычная территория, не занятая чем то",
         x: x,
         y: y,
         type: UnitType.empty,

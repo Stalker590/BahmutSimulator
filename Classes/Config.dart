@@ -1,15 +1,25 @@
 import 'Country.dart';
 import 'GameObject.dart';
 
-class GameConfig {
-  int mapSizeX;
-  int mapSizeY;
-  List<Country> countries = [];
-  List<GameObject> objects = [];
 
+class GameConfig {
+  String nameOfBattle;
+  String description;
+  List<List<GameObject>> worldMap;
+  List<Country> countries;
+  List<GameObject> objects;
+  int TimeForTurn;
+  int currentTurn;
+  bool GameRunning;
 
   GameConfig({
-    required this.mapSizeX,
-    required this.mapSizeY,
+    required this.nameOfBattle,
+    required this.description,
+    required this.worldMap,
+    required this.countries,
+    required this.objects,
+    required this.TimeForTurn,
+    this.currentTurn = 0,
+    this.GameRunning = true,
   });
 }
